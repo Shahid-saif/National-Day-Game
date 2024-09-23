@@ -20,12 +20,15 @@ public class LeaderBoardUI : MonoBehaviour
     [Header("Submit Score")]
     public GameObject SubmitFormHolder;
     [SerializeField] TMP_InputField PlayerEmail;
+    [SerializeField] TMP_InputField PlayerName;
     [SerializeField] TextMeshProUGUI errorMessage;
     private string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
     bool IsCorrectEmail = false;
 
     [Header("LoadingScreen")]
     [SerializeField] GameObject loadingScreen;
+
+    public GameObject CatchMenu;
 
     private void Start()
     {
@@ -48,17 +51,19 @@ public class LeaderBoardUI : MonoBehaviour
             GameObject go = Instantiate(UIRef, RefParent);
             go.SetActive(true);
             LeaderBoardUIRef uIRef = go.GetComponent<LeaderBoardUIRef>();
-            uIRef.PlayerEmail.text = entry.email;
+            uIRef.PlayerName.text = entry.name;
             uIRef.Score.text = entry.points.ToString();
         }
         loadingScreen.SetActive(false);
         LeaderBoardHolder.SetActive(true);
     }
 
-    public async Task SubmitScore(string email, int points)
+    public async Task SubmitScore(string name, string email, int points)
     {
         loadingScreen.SetActive(true);
-        var response = await FirebaseSubmitScoreOperation.Create().Call(email, points);
+        email = email.ToLower();
+
+        var response = await FirebaseSubmitScoreOperation.Create().Call(name, email, points);
 
         if (response.IsError)
         {
@@ -87,7 +92,7 @@ public class LeaderBoardUI : MonoBehaviour
         else
         {
             Debug.Log("البريد الإلكتروني غير صحيح");
-            errorMessage.text = "Wrong Email";
+            errorMessage.text = "الايميل المدخل غير صحيح";
             IsCorrectEmail = false;
         }
     }
@@ -95,8 +100,16 @@ public class LeaderBoardUI : MonoBehaviour
     {
         if (IsCorrectEmail)
         {
-            await SubmitScore(PlayerEmail.text, gameManager.ColletedCoins);
-            await SetupLeaderBoardUI();
+            if (PlayerName.text != string.Empty || PlayerName.text != "")
+            {
+                await SubmitScore(PlayerName.text, PlayerEmail.text, gameManager.ColletedCoins);
+                await SetupLeaderBoardUI();
+            }
+            else
+            {
+                errorMessage.text = "ادخل اسم مناسب";
+            }
+
         }
 
     }

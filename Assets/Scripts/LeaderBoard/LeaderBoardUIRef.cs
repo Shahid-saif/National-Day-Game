@@ -5,6 +5,6 @@ using TMPro;
 
 public class LeaderBoardUIRef : MonoBehaviour
 {
-    public TextMeshProUGUI PlayerEmail;
+    public TextMeshProUGUI PlayerName;
     public TextMeshProUGUI Score;
 }

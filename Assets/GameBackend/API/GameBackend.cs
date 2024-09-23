@@ -1,14 +1,14 @@
 using System;
 using System.Threading.Tasks;
 
-using Cysharp.Threading.Tasks;
-
 using UnityEngine;
 using UnityEngine.Scripting;
 
 [Preserve]
 public class GameBackend : MonoBehaviour
 {
+    public static GameBackend Instance { get; private set; }
+
     [Preserve]
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void OnLoad()
@@ -21,30 +21,11 @@ public class GameBackend : MonoBehaviour
         DontDestroyOnLoad(instance);
     }
 
-    void Start()
+    public async Task SubmitScore(string name, string email, int points)
     {
-        Procedure().Forget();
-        async UniTask Procedure()
-        {
-            var email = "moe4baker@gmail.com";
-            var points = 42;
+        email = email.ToLower();
 
-            Debug.Log("Submit Score");
-            await SubmitScore(email, points);
-
-            Debug.Log("Query Leaderboard");
-            var leaderboard = await QueryLeaderboard(10);
-
-            Debug.Log($"Leaderboard Count: {leaderboard.Length}");
-
-            foreach (var entry in leaderboard)
-                Debug.Log($"Leaderboard Entry, Email: {entry.email}, Points: {entry.points}");
-        }
-    }
-
-    public async Task SubmitScore(string email, int points)
-    {
-        var response = await FirebaseSubmitScoreOperation.Create().Call(email, points);
+        var response = await FirebaseSubmitScoreOperation.Create().Call(name, email, points);
 
         if (response.IsError)
         {
@@ -72,12 +53,7 @@ public class GameBackend : MonoBehaviour
 [Serializable]
 public struct LeaderboardEntry
 {
+    public string name;
     public string email;
     public int points;
-
-    public LeaderboardEntry(string email, int points)
-    {
-        this.email = email;
-        this.points = points;
-    }
 }

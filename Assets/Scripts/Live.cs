@@ -6,6 +6,13 @@ public class Live : MonoBehaviour
 {
     [SerializeField] int Lives;
     [SerializeField] string CollectLive = "CollectLive";
+
+    private void Start()
+    {
+        int r = Random.Range(0, 10);
+        if (r > 5)
+            this.gameObject.SetActive(false);
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")

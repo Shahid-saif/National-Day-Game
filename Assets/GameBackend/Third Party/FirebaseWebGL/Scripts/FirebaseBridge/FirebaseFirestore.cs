@@ -34,7 +34,7 @@ namespace FirebaseWebGL.Scripts.FirebaseBridge
             string fallback);
 
         [DllImport("__Internal")]
-        public static extern void SubmitScore(string email, int points, string objectName, string callback,
+        public static extern void SubmitScore(string name, string email, int points, string objectName, string callback,
             string fallback);
 
         /// <summary>

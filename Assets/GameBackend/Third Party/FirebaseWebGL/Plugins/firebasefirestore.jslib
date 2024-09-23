@@ -25,8 +25,9 @@ mergeInto(LibraryManager.library, {
         }
     },
 
-    SubmitScore: async function (emailPtr, points, objectNamePtr, callbackPtr, fallbackPtr)
+    SubmitScore: async function (namePtr, emailPtr, points, objectNamePtr, callbackPtr, fallbackPtr)
     {
+        let name = Pointer_stringify(namePtr);
         let email = Pointer_stringify(emailPtr);
 
         let objectName = Pointer_stringify(objectNamePtr);
@@ -42,6 +43,7 @@ mergeInto(LibraryManager.library, {
             if (snapshot.exists === false || points > snapshot.data().points)
             {
                 await doc.set({
+                    name: name,
                     email: email,
                     points: points,
                 });

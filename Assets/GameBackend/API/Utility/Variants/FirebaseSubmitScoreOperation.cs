@@ -5,11 +5,13 @@ using FirebaseWebGL.Scripts.Objects;
 
 public class FirebaseSubmitScoreOperation : FirebaseOperation<FirebaseSubmitScoreOperation, string, string>
 {
+    string Name;
     string Email;
     int Points;
 
-    public UniTask<Response<string, FirebaseError>> Call(string email, int points)
+    public UniTask<Response<string, FirebaseError>> Call(string name, string email, int points)
     {
+        this.Name = name;
         this.Email = email;
         this.Points = points;
 
@@ -18,7 +20,7 @@ public class FirebaseSubmitScoreOperation : FirebaseOperation<FirebaseSubmitScor
 
     protected override void Invoke(InvokeParamters paramters)
     {
-        FirebaseFirestore.SubmitScore(Email, Points, ObjectName, paramters.ValueHandlerCallback, paramters.ErrorHandlerCallback);
+        FirebaseFirestore.SubmitScore(Name, Email, Points, ObjectName, paramters.ValueHandlerCallback, paramters.ErrorHandlerCallback);
     }
 
     public override string MediumParser(string medium) => medium;

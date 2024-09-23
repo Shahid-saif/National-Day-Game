@@ -42,7 +42,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform S2;
     [SerializeField] Transform S3;
 
-    // Update is called once per frame
+
+    [Header("Touch Input")]
+
+    private Vector2 startTouchPosition, endTouchPosition;
+    private float swipeThreshold = 50f; // Adjust as needed
+
     void Update()
     {
         gameManager.uiManager.UpdateUI();
@@ -72,7 +77,9 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        MoveHorizontally();
+        //  MoveHorizontally();
+        HandleKeyboardInput();
+        HandleTouchInput();
         PlayerMovement();
         MoveForward();
         playerAnim.speed = gameManager.WorldSpeedMultiplayer;
@@ -90,10 +97,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetButtonDown("Slide"))
             {
-                playerAnim.CrossFade("Slide", 0.1f, 0, 0f);
-                characterAnim.CrossFade("Slide", 0.1f, 0, 0f);
-                //  gameManager.audioManager.PlaySoundEffectById("Slide");
-                SlideEffect.Play();
+                Slide();
             }
         }
     }
@@ -113,6 +117,13 @@ public class PlayerController : MonoBehaviour
         gameManager.audioManager.PlaySoundEffectById("Jump");
     }
 
+    void Slide()
+    {
+        playerAnim.CrossFade("Slide", 0.1f, 0, 0f);
+        characterAnim.CrossFade("Slide", 0.1f, 0, 0f);
+        //  gameManager.audioManager.PlaySoundEffectById("Slide");
+        SlideEffect.Play();
+    }
     public void MoveForward()
     {
         float distanceThisFrame = Vector3.forward.magnitude * RunSpeed * gameManager.WorldSpeedMultiplayer * Time.deltaTime;
@@ -164,6 +175,91 @@ public class PlayerController : MonoBehaviour
                 // gameManager.audioManager.PlaySoundEffectById("MoveHorizontal");
             }
         }
+    }
+    void HandleTouchInput()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    startTouchPosition = touch.position;
+                    break;
+
+                case TouchPhase.Ended:
+                    endTouchPosition = touch.position;
+                    float horizontalSwipe = endTouchPosition.x - startTouchPosition.x;
+                    float verticalSwipe = endTouchPosition.y - startTouchPosition.y;
+
+                    // Determine if it was a horizontal or vertical swipe
+                    if (Mathf.Abs(horizontalSwipe) > Mathf.Abs(verticalSwipe) && Mathf.Abs(horizontalSwipe) > swipeThreshold)
+                    {
+                        // Horizontal Swipe
+                        if (horizontalSwipe > 0 && CurrPos != RightPos)
+                        {
+                            MoveRight();
+                        }
+                        else if (horizontalSwipe < 0 && CurrPos != LeftPos)
+                        {
+                            MoveLeft();
+                        }
+                    }
+                    else if (Mathf.Abs(verticalSwipe) > swipeThreshold)
+                    {
+                        // Vertical Swipe
+                        if (verticalSwipe > 0 && isGrounded) // Swipe Up for Jump
+                        {
+                            Jump();
+                        }
+                        else if (verticalSwipe < 0) // Swipe Down for Slide
+                        {
+                            if (!playerAnim.GetCurrentAnimatorStateInfo(0).IsName("Slide"))
+                                Slide();
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    void HandleKeyboardInput()
+    {
+        if (Input.GetButtonDown("Right"))
+        {
+            MoveRight();
+        }
+
+        if (Input.GetButtonDown("Left"))
+        {
+            MoveLeft();
+        }
+    }
+    void MoveRight()
+    {
+        if (CurrPos == LeftPos)
+        {
+            CurrPos = MiddlePos;
+        }
+        else if (CurrPos == MiddlePos)
+        {
+            CurrPos = RightPos;
+        }
+        characterAnim.CrossFade("JumpRight", 0.01f);
+    }
+
+    void MoveLeft()
+    {
+        if (CurrPos == RightPos)
+        {
+            CurrPos = MiddlePos;
+        }
+        else if (CurrPos == MiddlePos)
+        {
+            CurrPos = LeftPos;
+        }
+        characterAnim.CrossFade("JumpLeft", 0.01f);
     }
 
     public void GitHit()

@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
         {
             GameOver = true;
             PlayerController.PlayerDie();
-            leaderBoardUI.SubmitFormHolder.SetActive(true);
+            Invoke("OpenCatchMenu", 2f);
             PlayerLives = 0;
         }
     }
@@ -79,11 +79,14 @@ public class GameManager : MonoBehaviour
         {
             GameOver = true;
             PlayerController.PlayerDie();
-            leaderBoardUI.SubmitFormHolder.SetActive(true);
+            Invoke("OpenCatchMenu", 2f);
             PlayerLives = 0;
         }
     }
-
+    void OpenCatchMenu()
+    {
+        leaderBoardUI.CatchMenu.SetActive(true);
+    }
     public void CollectPlayerLive(int lives)
     {
         PlayerLives += lives;
