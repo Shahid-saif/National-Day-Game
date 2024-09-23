@@ -10,7 +10,7 @@ mergeInto(LibraryManager.library, {
         {
             let query = await firebase.firestore()
                 .collection("Leaderboard")
-                .orderBy("points", "dsc")
+                .orderBy("points", "desc")
                 .limit(limit)
                 .get();
 
@@ -20,7 +20,7 @@ mergeInto(LibraryManager.library, {
         }
         catch (error)
         {
-            console.error("Query Leaderboard Error:", error);
+            console.error(`Query Leaderboard Error: ${error}`);
             unityInstance.Module.SendMessage(objectName, fallback, JSON.stringify(error, Object.getOwnPropertyNames(error)));
         }
     },
@@ -40,20 +40,19 @@ mergeInto(LibraryManager.library, {
 
             let snapshot = await doc.get();
 
-            if (snapshot.exists === false || points > snapshot.data().points)
-            {
-                await doc.set({
-                    name: name,
-                    email: email,
-                    points: points,
-                });
-            }
+            let saved = snapshot.data().points;
+
+            await doc.set({
+                name: name,
+                email: email,
+                points: saved > points ? saved : points,
+            });
 
             unityInstance.Module.SendMessage(objectName, callback, "DONE");
         }
         catch (error)
         {
-            console.error("Submit Score Error:", error);
+            console.error(`Query Leaderboard Error: ${error}`);
             unityInstance.Module.SendMessage(objectName, fallback, JSON.stringify(error, Object.getOwnPropertyNames(error)));
         }
     },

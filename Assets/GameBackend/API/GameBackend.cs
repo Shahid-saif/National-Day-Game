@@ -21,6 +21,11 @@ public class GameBackend : MonoBehaviour
         DontDestroyOnLoad(instance);
     }
 
+    void Awake()
+    {
+        Instance = this;
+    }
+
     public async Task SubmitScore(string name, string email, int points)
     {
         email = email.ToLower();

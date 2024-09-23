@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using TMPro;
+
 using UnityEngine;
 
 public class LeaderBoardUI : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] GameBackend gameBackend;
+    [SerializeField] GameBackend gameBackend => GameBackend.Instance;
     [SerializeField] GameManager gameManager;
 
     [Header("LeaderBoard")]
@@ -28,53 +28,53 @@ public class LeaderBoardUI : MonoBehaviour
     [Header("LoadingScreen")]
     [SerializeField] GameObject loadingScreen;
 
+    List<GameObject> list;
+
     public GameObject CatchMenu;
+
+    void Awake()
+    {
+        list = new();
+    }
 
     private void Start()
     {
-        gameBackend = FindAnyObjectByType<GameBackend>();
         gameManager = FindAnyObjectByType<GameManager>();
         PlayerEmail.onEndEdit.AddListener(ValidateEmail);
     }
     public async Task SetupLeaderBoardUI()
     {
-        SubmitFormHolder.SetActive(false);
-        loadingScreen.SetActive(true);
-        Debug.Log("Query Leaderboard");
-        var leaderboard = await gameBackend.QueryLeaderboard(10);
-
-        Debug.Log($"Leaderboard Count: {leaderboard.Length}");
-
-        foreach (var entry in leaderboard)
+        try
         {
-            Debug.Log($"Leaderboard Entry, Email: {entry.email}, Points: {entry.points}");
-            GameObject go = Instantiate(UIRef, RefParent);
-            go.SetActive(true);
-            LeaderBoardUIRef uIRef = go.GetComponent<LeaderBoardUIRef>();
-            uIRef.PlayerName.text = entry.name;
-            uIRef.Score.text = entry.points.ToString();
+            SubmitFormHolder.SetActive(false);
+            loadingScreen.SetActive(true);
+            Debug.Log("Query Leaderboard");
+            var leaderboard = await gameBackend.QueryLeaderboard(10);
+
+            Debug.Log($"Leaderboard Count: {leaderboard.Length}");
+
+            loadingScreen.SetActive(false);
+            LeaderBoardHolder.SetActive(true);
+
+            foreach (var entry in list)
+                Destroy(entry);
+
+            foreach (var entry in leaderboard)
+            {
+                Debug.Log($"Leaderboard Entry, Email: {entry.email}, Points: {entry.points}");
+                GameObject go = Instantiate(UIRef, RefParent);
+                go.SetActive(true);
+                LeaderBoardUIRef uIRef = go.GetComponent<LeaderBoardUIRef>();
+                uIRef.PlayerName.text = entry.name;
+                uIRef.Score.text = entry.points.ToString();
+                list.Add(go);
+            }
         }
-        loadingScreen.SetActive(false);
-        LeaderBoardHolder.SetActive(true);
-    }
-
-    public async Task SubmitScore(string name, string email, int points)
-    {
-        loadingScreen.SetActive(true);
-        email = email.ToLower();
-
-        var response = await FirebaseSubmitScoreOperation.Create().Call(name, email, points);
-
-        if (response.IsError)
+        catch (System.Exception ex)
         {
-            Debug.LogError($"Failed to Submit Score, Email: {email}, Points: {points}, Error: {response.Error}");
-            return;
+            Debug.LogError(ex);
         }
-
-        Debug.LogError($"Submit Result: {response.Value}");
-        loadingScreen.SetActive(false);
     }
-
 
     public void ShowSubmitUI()
     {
@@ -102,7 +102,7 @@ public class LeaderBoardUI : MonoBehaviour
         {
             if (PlayerName.text != string.Empty || PlayerName.text != "")
             {
-                await SubmitScore(PlayerName.text, PlayerEmail.text, gameManager.ColletedCoins);
+                await gameBackend.SubmitScore(PlayerName.text, PlayerEmail.text, gameManager.ColletedCoins);
                 await SetupLeaderBoardUI();
             }
             else
