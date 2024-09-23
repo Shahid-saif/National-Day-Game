@@ -162,4 +162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f5eafd0cfdc2a84ca3e4009c448ab3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 0.1
+  SlowDamage: 0.2
+  HitLives: 1
+  HitSound: Hit
+  Dest: 1

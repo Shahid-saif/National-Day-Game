@@ -5,19 +5,29 @@ using UnityEngine;
 
 public class Obstical : MonoBehaviour
 {
-    [SerializeField] float Damage;
+    [SerializeField] float SlowDamage;
+    [SerializeField] int HitLives = 1;
+    [SerializeField] string HitSound = "Hit";
+    [SerializeField] bool Dest = false;
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
         {
+
             GameManager g = GameManager.Instance;
-            g.PlayerDamage(Damage);
+            if (g.GameOver) { return; }
+
+            g.PlayerDamage(HitLives);
             g.CameraController.ShakeCamera();
             g.PlayerController.GitHit();
             g.DestroyEffect.transform.position = transform.position;
             g.DestroyEffect.Play();
+            g.audioManager.PlaySoundEffectById(HitSound);
             //Add Sound
-            Destroy(gameObject);
+            if (Dest)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

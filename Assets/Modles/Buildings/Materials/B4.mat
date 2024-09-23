@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: B4
-  m_Shader: {fileID: 4800000, guid: 8c23fc4fe4a5de84eb1348af931719b1, type: 3}
+  m_Shader: {fileID: 4800000, guid: c3aa015d1a050e246871669a42e93b2d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -63,6 +63,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MetallicSmoothness:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Normal:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -83,8 +87,10 @@ Material:
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
+    - _DepthMultiplier: 2
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _EdgeStrengthen: 2
     - _EmissionStrenght: 0
     - _GlossMapScale: 1
     - _Glossiness: 0
@@ -92,7 +98,10 @@ Material:
     - _MetalicSmoothness: 0
     - _Metallic: 0
     - _Mode: 0
+    - _NormalStrenght: 1
     - _OcclusionStrength: 1
+    - _OutlineThreshold: 3
+    - _OutlineWidth: 2
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -105,5 +114,6 @@ Material:
     - _AlbedoColor: {r: 1, g: 1, b: 1, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _StrokeColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
