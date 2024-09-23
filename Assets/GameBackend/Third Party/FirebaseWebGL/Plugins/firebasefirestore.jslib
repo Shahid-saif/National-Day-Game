@@ -40,12 +40,13 @@ mergeInto(LibraryManager.library, {
 
             let snapshot = await doc.get();
 
-            let saved = snapshot.data().points;
+            let saved = snapshot.get("points");
+            if (saved === undefined) saved = 0;
 
             await doc.set({
                 name: name,
                 email: email,
-                points: saved > points ? saved : points,
+                points: (points > saved) ? points : saved,
             });
 
             unityInstance.Module.SendMessage(objectName, callback, "DONE");
