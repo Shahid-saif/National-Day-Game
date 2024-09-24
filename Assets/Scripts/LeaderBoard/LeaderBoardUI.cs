@@ -38,6 +38,7 @@ public class LeaderBoardUI : MonoBehaviour
     void Awake()
     {
         list = new();
+        ResultMenuList = new List<GameObject>();
     }
 
     private void Start()
@@ -63,8 +64,15 @@ public class LeaderBoardUI : MonoBehaviour
 
             foreach (var entry in list)
                 Destroy(entry);
+
+            list.Clear();
+
+            var position = 0;
+
             foreach (var entry in leaderboard)
             {
+                position += 1;
+
                 Debug.Log($"Leaderboard Entry, Email: {entry.email}, Points: {entry.points}");
                 GameObject go = Instantiate(UIRef, RefParent);
                 go.SetActive(true);
@@ -73,7 +81,7 @@ public class LeaderBoardUI : MonoBehaviour
                 uIRef.PlayerName.text = entry.name;
                 uIRef.Score.text = entry.points.ToString();
                 list.Add(go);
-                uIRef.PlayerNumber.text = (list.IndexOf(go) + 1).ToString();
+                uIRef.PlayerNumber.text = (position).ToString();
             }
         }
         catch (System.Exception ex)
@@ -97,8 +105,15 @@ public class LeaderBoardUI : MonoBehaviour
 
             foreach (var entry in ResultMenuList)
                 Destroy(entry);
+
+            ResultMenuList.Clear();
+
+            var position = 0;
+
             foreach (var entry in leaderboard)
             {
+                position += 1;
+
                 Debug.Log($"Leaderboard Entry, Email: {entry.email}, Points: {entry.points}");
                 GameObject go = Instantiate(UIRefResult, RefParentResultMenu);
                 go.SetActive(true);
@@ -107,7 +122,7 @@ public class LeaderBoardUI : MonoBehaviour
                 uIRef.PlayerName.text = entry.name;
                 uIRef.Score.text = entry.points.ToString();
                 ResultMenuList.Add(go);
-                uIRef.PlayerNumber.text = (ResultMenuList.IndexOf(go) + 1).ToString();
+                uIRef.PlayerNumber.text = (position).ToString();
             }
         }
         catch (System.Exception ex)
