@@ -14,7 +14,9 @@ public class LeaderBoardUI : MonoBehaviour
 
     [Header("LeaderBoard")]
     [SerializeField] GameObject UIRef;
+    [SerializeField] GameObject UIRefResult;
     [SerializeField] RectTransform RefParent;
+    [SerializeField] RectTransform RefParentResultMenu;
     [SerializeField] GameObject LeaderBoardHolder;
 
     [Header("Submit Score")]
@@ -29,6 +31,7 @@ public class LeaderBoardUI : MonoBehaviour
     [SerializeField] GameObject loadingScreen;
 
     List<GameObject> list;
+    List<GameObject> ResultMenuList;
 
     public GameObject CatchMenu;
 
@@ -46,10 +49,12 @@ public class LeaderBoardUI : MonoBehaviour
     {
         try
         {
+
+
             SubmitFormHolder.SetActive(false);
             loadingScreen.SetActive(true);
             Debug.Log("Query Leaderboard");
-            var leaderboard = await gameBackend.QueryLeaderboard(10);
+            var leaderboard = await gameBackend.QueryLeaderboard(50);
 
             Debug.Log($"Leaderboard Count: {leaderboard.Length}");
 
@@ -58,16 +63,17 @@ public class LeaderBoardUI : MonoBehaviour
 
             foreach (var entry in list)
                 Destroy(entry);
-
             foreach (var entry in leaderboard)
             {
                 Debug.Log($"Leaderboard Entry, Email: {entry.email}, Points: {entry.points}");
                 GameObject go = Instantiate(UIRef, RefParent);
                 go.SetActive(true);
                 LeaderBoardUIRef uIRef = go.GetComponent<LeaderBoardUIRef>();
+
                 uIRef.PlayerName.text = entry.name;
                 uIRef.Score.text = entry.points.ToString();
                 list.Add(go);
+                uIRef.PlayerNumber.text = (list.IndexOf(go) + 1).ToString();
             }
         }
         catch (System.Exception ex)
@@ -75,7 +81,40 @@ public class LeaderBoardUI : MonoBehaviour
             Debug.LogError(ex);
         }
     }
+    public async Task SetupLeaderBoardUIForResultMenu()
+    {
+        try
+        {
+            SubmitFormHolder.SetActive(false);
+            loadingScreen.SetActive(true);
+            Debug.Log("Query Leaderboard");
+            var leaderboard = await gameBackend.QueryLeaderboard(3);
 
+            Debug.Log($"Leaderboard Count: {leaderboard.Length}");
+
+            loadingScreen.SetActive(false);
+            LeaderBoardHolder.SetActive(true);
+
+            foreach (var entry in ResultMenuList)
+                Destroy(entry);
+            foreach (var entry in leaderboard)
+            {
+                Debug.Log($"Leaderboard Entry, Email: {entry.email}, Points: {entry.points}");
+                GameObject go = Instantiate(UIRefResult, RefParentResultMenu);
+                go.SetActive(true);
+                LeaderBoardUIRef uIRef = go.GetComponent<LeaderBoardUIRef>();
+
+                uIRef.PlayerName.text = entry.name;
+                uIRef.Score.text = entry.points.ToString();
+                ResultMenuList.Add(go);
+                uIRef.PlayerNumber.text = (ResultMenuList.IndexOf(go) + 1).ToString();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError(ex);
+        }
+    }
     public void ShowSubmitUI()
     {
         SubmitFormHolder.SetActive(true);
@@ -116,5 +155,9 @@ public class LeaderBoardUI : MonoBehaviour
     public async void ShowLeaderBoard()
     {
         await SetupLeaderBoardUI();
+    }
+    public async void ShowLeaderBoardResultMenu()
+    {
+        await SetupLeaderBoardUIForResultMenu();
     }
 }

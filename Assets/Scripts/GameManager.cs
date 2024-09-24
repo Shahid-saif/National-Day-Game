@@ -86,6 +86,7 @@ public class GameManager : MonoBehaviour
     void OpenCatchMenu()
     {
         leaderBoardUI.CatchMenu.SetActive(true);
+        leaderBoardUI.ShowLeaderBoardResultMenu();
     }
     public void CollectPlayerLive(int lives)
     {
